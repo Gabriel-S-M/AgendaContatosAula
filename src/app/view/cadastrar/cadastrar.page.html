@@ -1,0 +1,70 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" style="color: white"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cadastrar</ion-title> </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+    <form [formGroup]="formCadastrar" (ngSubmit)="submitForm()" novalidate>
+    <ion-item lines="none">
+      <ion-input placeholder="Nome" formControlName="nome"></ion-input>
+    </ion-item>
+    <ion-item class="item-error" *ngIf="(formCadastrar['get']('nome')?.touched || formCadastrar['get']('nome')?.dirty && formCadastrar['get']('nome')?.errors)">
+      <span *ngIf="formCadastrar['get']('nome')?.hasError('required')">
+        Nome é Obrigatório.
+      </span>
+      <span *ngIf="formCadastrar['get']('nome')?.hasError('minlength')">
+        É preciso inserir o nome completo.
+      </span>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-input
+        placeholder="Telefone"
+        type="number"
+        formControlName="telefone"
+      ></ion-input>
+    </ion-item>
+    <ion-item class="item-error" *ngIf="(formCadastrar['get']('telefone')?.touched || formCadastrar['get']('telefone')?.dirty && formCadastrar['get']('telefone')?.errors)">
+      <span *ngIf="formCadastrar['get']('telefone')?.hasError('required')">
+        Telefone é Obrigatório.
+      </span>
+      <span *ngIf="formCadastrar['get']('telefone')?.hasError('minlength')">
+        Telefone tem no minimo 10 caracteres.
+      </span>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-select placeholder="Gênero" formControlName="genero">
+        <ion-select-option value="Não Declarar">Não Declarar</ion-select-option>
+        <ion-select-option value="Feminino">Feminino</ion-select-option>
+        <ion-select-option value="Masculino">Masculino</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item class="item-error" *ngIf="(formCadastrar['get']('genero')?.touched || formCadastrar['get']('genero')?.dirty && formCadastrar['get']('genero')?.errors)">
+      <span *ngIf="formCadastrar['get']('genero')?.hasError('required')">
+        Gênero é Obrigatório.
+      </span>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-label>Data de Nascimento</ion-label>
+      <ion-datetime-button datetime="datetime"></ion-datetime-button>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime id="datetime" formControlName="dataNascimento"
+          display-format="DD/MM/YYYY" [mode]="'date'"
+          placeholder="Selecione a data de Nascimento"
+          [max]="maxDate"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+    <ion-item class="item-error" *ngIf="(formCadastrar['get']('dataNascimento')?.touched || formCadastrar['get']('dataNascimento')?.dirty && formCadastrar['get']('dataNascimento')?.errors)">
+      <span *ngIf="formCadastrar['get']('dataNascimento')?.hasError('required')">
+        Data de Nascimento é Obrigatório.
+      </span>
+    </ion-item>
+  </form>
+  </ion-list>
+  <ion-button expand="block" type="submit">Cadastrar</ion-button>
+</ion-content>
