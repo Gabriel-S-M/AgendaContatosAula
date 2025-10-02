@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule,  } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Contato } from 'src/app/model/contato';
 import { IonicModule, AlertController } from '@ionic/angular';
@@ -11,39 +11,50 @@ import { ContatoService } from 'src/app/service/contato.service';
   templateUrl: './detalhar.page.html',
   styleUrls: ['./detalhar.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class DetalharPage implements OnInit {
   contato!: Contato
-  nome!: string;
-  telefone!: string;
-  genero!: string;
-  maxDate!: string;
-  email!: string;
-  editar: boolean = true;
+  editar: boolean = false;
+  formDetalhar!: FormGroup;
 
   constructor(private router: Router,
     private alertController: AlertController,
-    private contatoService: ContatoService) { }
+    private contatoService: ContatoService,
+    private formBuilder: FormBuilder) {}
 
   ngOnInit() {
     const nav = this.router.getCurrentNavigation();
     if(nav?.extras?.state?.['objeto']){
       this.contato = nav?.extras?.state?.['objeto']
-      this.nome = this.contato.nome;
-      this.telefone = this.contato.telefone;
-      this.genero = this.contato.genero;
-      this.email = this.contato.email;
+      this.contato = nav.extras.state['objeto'] as Contato;
+
+      this.formDetalhar = this.formBuilder.group({
+        nome: [this.contato.nome, [Validators.required, Validators.minLength(8)]],
+        telefone: [this.contato.telefone, [Validators.required, Validators.minLength(10)]],
+        genero: [this.contato.genero, [Validators.required]],
+        email: [this.contato.email, [Validators.required, Validators.email]],
+      });
     }
   }
 
+  get errorControl(){
+    return this.formDetalhar.controls;
+  }
+
   salvar(){
-     if(!this.validar(this.nome) || !this.validar(this.telefone)){
+    if(!this.formDetalhar.valid){
       this.presentAlert("Erro ao Cadastrar", "Campos Obrigatórios")
       return;
     }
-    if(this.contatoService.update(this.contato, this.nome, this.telefone,
-      this.genero, this.email)){
+    const atualizado = this.contatoService.update(
+      this.contato,
+      this.formDetalhar.value['nome'],
+      this.formDetalhar.value['telefone'],
+      this.formDetalhar.value['genero'],
+      this.formDetalhar.value['email']
+    );
+    if(atualizado){
         this.presentAlert('Atualizar', 'Contato atualizado com sucesso')
         this.router.navigate(['/home'])
       }else{
@@ -54,7 +65,7 @@ export class DetalharPage implements OnInit {
   excluir(){
     this.presentConfirmAlert("Excluir Contato",
       "Você realmente deseja excluir contato?",
-      this.excluirContato()
+      () => this.excluirContato()
     )
   }
   excluirContato(){
@@ -99,7 +110,7 @@ export class DetalharPage implements OnInit {
       message: message,
       buttons: [
         {text: 'Cancelar', role: 'cancelar', cssClass: 'secondary', handler:()=>{}},
-        {text: 'Confirmar', handler:(acao)=>{acao}}
+        {text: 'Confirmar',handler: () => {acao();}}
       ],
     });
     await alert.present();
