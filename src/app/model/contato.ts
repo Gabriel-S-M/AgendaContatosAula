@@ -1,5 +1,5 @@
 export class Contato {
-  private _id: number;
+  private _id!: string;
   private _nome: string;
   private _telefone: string;
   private _email!: string;
@@ -7,12 +7,11 @@ export class Contato {
 
   constructor(nome: string, telefone: string) {
     let chave = new Date();
-    this._id = chave.getTime();
     this._nome = nome;
     this._telefone = telefone;
   }
 
-  public get id(): number{
+  public get id(): string{
     return this._id;
   }
   public get nome(): string {
@@ -27,16 +26,16 @@ export class Contato {
   public set telefone(value: string) {
     this._telefone = value;
   }
-  public get email(): string {
-    return this._email;
-  }
-  public set email(value: string) {
-    this._email = value;
-  }
   public get genero(): string {
     return this._genero;
   }
   public set genero(value: string) {
     this._genero = value;
+  }
+  public get email(): string {
+    return this._email;
+  }
+  public set email(value: string) {
+    this._email = value;
   }
 }
