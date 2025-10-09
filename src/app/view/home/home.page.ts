@@ -5,7 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { add, createOutline  } from 'ionicons/icons';
 import { Contato } from 'src/app/model/contato';
-import { ContatoService } from 'src/app/service/contato.service';
+import { Firebase } from 'src/app/service/firebase.service';
 
 addIcons({add:add, 'create-outline':createOutline})
 
@@ -16,13 +16,25 @@ addIcons({add:add, 'create-outline':createOutline})
   imports: [IonicModule, CommonModule],
 })
 export class HomePage {
-  contatos: Contato[];
+  contatos: Contato[] = [];
+  contosSubscription: Subscription | undefined;
 
   constructor(private router: Router,
-    private contatoService: ContatoService
+    private firebase: Firebase,
   ) {
-    this.contatos = this.contatoService.contatos;
-    console.log(this.contatos)
+    this.carregarContatos();
+  }
+
+  async carregarContatos(){
+    await this.firebase.getAllContacts()
+    .subcribe({
+      next: (contatosRecebidos: Contato[]) => {
+        this.contatos = contatosRecebidos;
+        console.log("Contatos Carregados");
+      },error: (error)=>{
+        console.error("Erro ao Careegar Contatos!")
+      }
+    })
   }
 
   irParaCadastrar(){

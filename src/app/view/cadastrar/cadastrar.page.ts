@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ContatoService } from 'src/app/service/contato.service';
+import { Firebase } from 'src/app/service/firebase.service';
 import { Contato } from 'src/app/model/contato';
 
 
@@ -23,7 +23,7 @@ export class CadastrarPage implements OnInit {
 
   constructor(private alertController: AlertController,
     private router: Router,
-    private contatoService: ContatoService,
+    private firebase: Firebase,
     private formBuilder: FormBuilder) {
       this.formCadastrar = this.formBuilder.group({
         nome: ['', [Validators.required,Validators.minLength(8)]],
@@ -53,15 +53,23 @@ export class CadastrarPage implements OnInit {
     }
   }
 
+<<<<<<< Updated upstream
   _cadastrar(){
     let dataNascimento = this.formCadastrar.value['dataNascimento'].split('T')[0];
+=======
+  async _cadastrar(){
+>>>>>>> Stashed changes
     let contato: Contato = new Contato(this.formCadastrar.value['nome'],
       this.formCadastrar.value['telefone']);
       contato.dataNascimento = dataNascimento;
       contato.genero = this.formCadastrar.value['genero'];
-     this.contatoService.create(contato)
-     this.presentAlert("Sucesso", "Contato Cadastrado")
-     this.router.navigate(["/home"])
+     try{
+      await this.firebase.create(contato);
+      this.presentAlert("Sucesso", "Contato Cadastrado");
+      this.router.navigate(["/home"])
+     }catch(error){
+      this.presentAlert("Erro ao Salvar o Contato no Banco");
+     }
   }
 
    async presentAlert(subHeader: string, message: string) {

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Contato } from 'src/app/model/contato';
 import { IonicModule, AlertController } from '@ionic/angular';
-import { ContatoService } from 'src/app/service/contato.service';
+import { Firebase } from 'src/app/service/firebase.service';
 
 @Component({
   selector: 'app-detalhar',
@@ -24,7 +24,12 @@ export class DetalharPage implements OnInit {
 
   constructor(private router: Router,
     private alertController: AlertController,
+<<<<<<< Updated upstream
     private contatoService: ContatoService) { }
+=======
+    private firebase: Firebase,
+    private formBuilder: FormBuilder) {}
+>>>>>>> Stashed changes
 
   ngOnInit() {
     const nav = this.router.getCurrentNavigation();
@@ -37,6 +42,7 @@ export class DetalharPage implements OnInit {
     }
   }
 
+<<<<<<< Updated upstream
   salvar(){
     this.dataNascimento = this.dataNascimento.split('T')[0];
      if(!this.validar(this.nome) || !this.validar(this.telefone)){
@@ -45,13 +51,29 @@ export class DetalharPage implements OnInit {
     }
     if(this.contatoService.update(this.contato, this.nome, this.telefone,
       this.genero, this.dataNascimento)){
-        this.presentAlert('Atualizar', 'Contato atualizado com sucesso')
-        this.router.navigate(['/home'])
-      }else{
-        this.presentAlert('Atualizar', 'Erro ao atualizar contato')
-      }
+=======
+  get errorControl(){
+    return this.formDetalhar.controls;
   }
 
+  async salvar(){
+    try{
+      await this.firebase.update(
+        this.contato,
+        this.formDetalhar.value['nome'],
+        this.formDetalhar.value['telefone'],
+        this.formDetalhar.value['genero'],
+        this.formDetalhar.value['email'];
+>>>>>>> Stashed changes
+        this.presentAlert('Atualizar', 'Contato atualizado com sucesso')
+        this.router.navigate(['/home']);
+      );
+    }catch(error){
+      this.presentAlert('Atualizar', 'Erro ao Atualizar o Contatos')
+    }
+  }
+
+<<<<<<< Updated upstream
   excluir(){
     this.presentConfirmAlert("Excluir Contato",
       "Você realmente deseja excluir contato?",
@@ -64,6 +86,15 @@ export class DetalharPage implements OnInit {
       this.router.navigate(['/home'])
     }else{
       this.presentAlert("Erro ao Excluir", "Contato não Encontrado");
+=======
+  async excluir(){
+    try{
+      await this.firebase.delete(this.contato.id);
+      this.presentAlert('Excluir', 'Exclusão efetuada com sucesso!');
+      this.router.navigate(['/home']);
+    }catch (error){
+      this.presentAlert('Erro ao Excluir', 'Contato Não Encotrado');
+>>>>>>> Stashed changes
     }
   }
 
